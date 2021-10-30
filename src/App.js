@@ -1,93 +1,77 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
 
-import { LocalTerra, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
+import {
+  useWallet,
+  useConnectedWallet,
+  WalletStatus,
+} from '@terra-money/wallet-provider'
 
-
-const terra = new LocalTerra()
-const { validator, test1 } = terra.wallets;
-
-
-const CONTRACT_ADDR = "terra18vd8fpwxzck93qlwghaj6arh4p7c5n896xzem5"
-
-const increment = async (signer) => {
-  const tx = await signer.createAndSignTx({
-    msgs: [
-      new MsgExecuteContract(
-        signer.key.accAddress,
-        CONTRACT_ADDR,
-        { "increment": {} },
-      ),
-
-    ],
-    fee: new StdFee(200000, { uluna: 10000 }),
-  });
-
-  return await terra.tx.broadcast(tx);
-}
-
-const reset = async (signer, count) => {
-  const tx = await signer.createAndSignTx({
-    msgs: [
-      new MsgExecuteContract(
-        signer.key.accAddress,
-        CONTRACT_ADDR,
-        { "reset": { count } },
-      ),
-
-    ],
-    fee: new StdFee(200000, { uluna: 10000 }),
-  });
-
-  return await terra.tx.broadcast(tx);
-}
-
-const getCount = async () =>
-  await terra.wasm.contractQuery(CONTRACT_ADDR, { "get_count": {} })
-
+import * as execute from './contract/execute'
+import * as query from './contract/query'
+import { ConnectWallet } from './components/ConnectWallet'
 
 function App() {
-
   const [count, setCount] = useState(null)
   const [updating, setUpdating] = useState(true)
   const [resetValue, setResetValue] = useState(0)
 
+  const { status } = useWallet()
+
+  const connectedWallet = useConnectedWallet()
+
   useEffect(() => {
     const prefetch = async () => {
-      setCount((await getCount()).count)
+      if (connectedWallet) {
+        setCount((await query.getCount(connectedWallet)).count)
+      }
       setUpdating(false)
     }
     prefetch()
-  }, [])
+  }, [connectedWallet])
 
   const onClickIncrement = async () => {
     setUpdating(true)
-    const tx = await increment(validator);
-    setCount((await getCount()).count)
+    await execute.increment(connectedWallet)
+    setCount((await query.getCount(connectedWallet)).count)
     setUpdating(false)
   }
 
   const onClickReset = async () => {
     setUpdating(true)
     console.log(resetValue)
-    const tx = await reset(validator, resetValue);
-    setCount((await getCount()).count)
+    await execute.reset(connectedWallet, resetValue)
+    setCount((await query.getCount(connectedWallet)).count)
     setUpdating(false)
   }
+
   return (
     <div className="App">
       <header className="App-header">
-
-        <p>
-          COUNT: {count} {updating ? "(updating . . .)" : ""}
-        </p>
-        <button onClick={onClickIncrement}> + </button>
-        <input type="number" onChange={e => setResetValue(+e.target.value)} value={resetValue} />
-        <button onClick={onClickReset}> reset </button>
+        <div style={{ display: 'inline' }}>
+          COUNT: {count} {updating ? '(updating . . .)' : ''}
+          <button onClick={onClickIncrement} type="button">
+            {' '}
+            +{' '}
+          </button>
+        </div>
+        {status === WalletStatus.WALLET_CONNECTED && (
+          <div style={{ display: 'inline' }}>
+            <input
+              type="number"
+              onChange={(e) => setResetValue(+e.target.value)}
+              value={resetValue}
+            />
+            <button onClick={onClickReset} type="button">
+              {' '}
+              reset{' '}
+            </button>
+          </div>
+        )}
+        <ConnectWallet />
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
