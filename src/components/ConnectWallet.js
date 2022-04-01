@@ -1,4 +1,7 @@
 import { useWallet, WalletStatus } from '@terra-dev/use-wallet'
+import Typography from '@mui/material/Typography';
+import { ReactComponent as WalletConnectIcon } from './../assets/wallet-connect.svg'
+import { SvgIcon } from '@mui/material';
 
 export const ConnectWallet = () => {
   const {
@@ -11,7 +14,20 @@ export const ConnectWallet = () => {
   } = useWallet()
 
   return (
+
     <div>
+
+        <Typography variant="h6" component={'div'} 
+        style={{
+          display       : 'flex',
+          alignItems    : 'space-between',
+          // justifyContent: 'center',
+          flexWrap      : 'wrap',
+        }}>
+          <p style={{margin:"0px", marginRight:"10px"}}>Wallet Options</p>
+
+        <SvgIcon style={{display:'flex', justifySelf:'center', alignSelf:'center'}} component={WalletConnectIcon} inheritViewBox/>
+        </Typography>
       {status === WalletStatus.WALLET_NOT_CONNECTED && (
         <>
           {availableInstallTypes.map((connectType) => (
@@ -25,9 +41,9 @@ export const ConnectWallet = () => {
           ))}
           {availableConnectTypes.map((connectType) => (
             <button
-              key={`connect-${connectType}`}
-              onClick={() => connect(connectType)}
-              type="button"
+              key     = {`connect-${connectType}`}
+              onClick = {() => connect(connectType)}
+              type    = "button"
             >
               Connect {connectType}
             </button>
