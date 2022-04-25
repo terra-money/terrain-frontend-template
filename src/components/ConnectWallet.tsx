@@ -6,16 +6,13 @@ export const ConnectWallet = () => {
     network,
     wallets,
     availableConnectTypes,
-    availableInstallTypes,
     availableConnections,
     connect,
-    install,
     disconnect,
   } = useWallet();
 
   return (
     <div>
-      <h1>My Terra App</h1>
       <section>
         <pre>
           {JSON.stringify(
@@ -24,7 +21,6 @@ export const ConnectWallet = () => {
               network,
               wallets,
               availableConnectTypes,
-              availableInstallTypes,
             },
             null,
             2,
@@ -35,14 +31,6 @@ export const ConnectWallet = () => {
       <footer>
         {status === WalletStatus.WALLET_NOT_CONNECTED && (
           <>
-            {availableInstallTypes.map((connectType) => (
-              <button
-                key={'install-' + connectType}
-                onClick={() => install(connectType)}
-              >
-                Install {connectType}
-              </button>
-            ))}
             {availableConnectTypes.map((connectType) => (
               <button
                 key={'connect-' + connectType}

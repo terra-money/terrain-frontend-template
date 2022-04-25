@@ -22,7 +22,8 @@ const App = () => {
   useEffect(() => {
     const prefetch = async () => {
       if (connectedWallet) {
-        setCount((await query.getCount(connectedWallet)).count)
+        const { count } : any = await query.getCount(connectedWallet)
+        setCount(count) 
       }
       setUpdating(false)
     }
@@ -30,18 +31,24 @@ const App = () => {
   }, [connectedWallet])
 
   const onClickIncrement = async () => {
-    setUpdating(true)
-    await execute.increment(connectedWallet)
-    setCount((await query.getCount(connectedWallet)).count)
-    setUpdating(false)
+    if (connectedWallet) {
+      setUpdating(true)
+      await execute.increment(connectedWallet)
+      const { count } : any = await query.getCount(connectedWallet)
+      setCount(count)
+      setUpdating(false)
+    }
   }
 
   const onClickReset = async () => {
-    setUpdating(true)
-    console.log(resetValue)
-    await execute.reset(connectedWallet, resetValue)
-    setCount((await query.getCount(connectedWallet)).count)
-    setUpdating(false)
+    if (connectedWallet) {
+      setUpdating(true)
+      console.log(resetValue)
+      await execute.reset(connectedWallet, resetValue)
+      const { count } : any = await query.getCount(connectedWallet)
+      setCount(count)
+      setUpdating(false)
+    }
   }
 
   return (
@@ -67,8 +74,8 @@ const App = () => {
             </button>
           </div>
         )}
-        <ConnectWallet />
       </header>
+      <ConnectWallet />
     </div>
   )
 }

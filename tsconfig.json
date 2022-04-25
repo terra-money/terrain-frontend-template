@@ -27,6 +27,6 @@
     "src"
   ],
   "exclude": [
-    "./src/contract/**"
+    "src/contract/**"
   ]
 }
