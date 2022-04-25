@@ -1,7 +1,6 @@
 import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
-import React from 'react';
 
-export function ConnectWallet() {
+export const ConnectWallet = () => {
   const {
     status,
     network,
@@ -9,7 +8,6 @@ export function ConnectWallet() {
     availableConnectTypes,
     availableInstallTypes,
     availableConnections,
-    supportFeatures,
     connect,
     install,
     disconnect,
@@ -17,7 +15,7 @@ export function ConnectWallet() {
 
   return (
     <div>
-      <h1>Connect Sample</h1>
+      <h1>My Terra App</h1>
       <section>
         <pre>
           {JSON.stringify(
@@ -25,7 +23,6 @@ export function ConnectWallet() {
               status,
               network,
               wallets,
-              supportFeatures: Array.from(supportFeatures),
               availableConnectTypes,
               availableInstallTypes,
             },

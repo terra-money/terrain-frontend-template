@@ -1,5 +1,4 @@
 import './App.css'
-
 import { useEffect, useState } from 'react'
 import {
   useWallet,
@@ -11,7 +10,7 @@ import * as execute from './contract/execute'
 import * as query from './contract/query'
 import { ConnectWallet } from './components/ConnectWallet'
 
-function App() {
+const App = () => {
   const [count, setCount] = useState(null)
   const [updating, setUpdating] = useState(true)
   const [resetValue, setResetValue] = useState(0)
