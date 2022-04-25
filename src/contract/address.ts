@@ -1,7 +1,7 @@
 // sync-ed from root via `tr sync-refs`
 import { ConnectedWallet } from "@terra-dev/use-wallet";
+  // @ts-ignore
 import config from "../refs.terrain.json";
-
 export const contractAdress = (wallet: ConnectedWallet) => {
   // Make sure the contract has actually been deployed to selected network.
   // @ts-ignore
