@@ -1,5 +1,4 @@
 import './App.css'
-
 import { useEffect, useState } from 'react'
 import {
   useWallet,
@@ -11,7 +10,7 @@ import * as execute from './contract/execute'
 import * as query from './contract/query'
 import { ConnectWallet } from './components/ConnectWallet'
 
-function App() {
+const App = () => {
   const [count, setCount] = useState(null)
   const [updating, setUpdating] = useState(true)
   const [resetValue, setResetValue] = useState(0)
@@ -23,7 +22,8 @@ function App() {
   useEffect(() => {
     const prefetch = async () => {
       if (connectedWallet) {
-        setCount((await query.getCount(connectedWallet)).count)
+        const { count } : any = await query.getCount(connectedWallet)
+        setCount(count) 
       }
       setUpdating(false)
     }
@@ -31,18 +31,24 @@ function App() {
   }, [connectedWallet])
 
   const onClickIncrement = async () => {
-    setUpdating(true)
-    await execute.increment(connectedWallet)
-    setCount((await query.getCount(connectedWallet)).count)
-    setUpdating(false)
+    if (connectedWallet) {
+      setUpdating(true)
+      await execute.increment(connectedWallet)
+      const { count } : any = await query.getCount(connectedWallet)
+      setCount(count)
+      setUpdating(false)
+    }
   }
 
   const onClickReset = async () => {
-    setUpdating(true)
-    console.log(resetValue)
-    await execute.reset(connectedWallet, resetValue)
-    setCount((await query.getCount(connectedWallet)).count)
-    setUpdating(false)
+    if (connectedWallet) {
+      setUpdating(true)
+      console.log(resetValue)
+      await execute.reset(connectedWallet, resetValue)
+      const { count } : any = await query.getCount(connectedWallet)
+      setCount(count)
+      setUpdating(false)
+    }
   }
 
   return (
@@ -68,8 +74,8 @@ function App() {
             </button>
           </div>
         )}
-        <ConnectWallet />
       </header>
+      <ConnectWallet />
     </div>
   )
 }
