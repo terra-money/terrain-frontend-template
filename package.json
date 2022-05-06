@@ -1,6 +1,7 @@
 {
-  "name": "my-terra-dapp-frontend",
-  "version": "0.1.0",
+  "name": "{{project-name}}",
+  "author": "{{authors}}",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@terra-money/terra.js": "^2.0.15",
