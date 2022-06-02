@@ -1,5 +1,5 @@
-import { ConnectedWallet } from '@terra-dev/use-wallet'
 import { LCDClient } from '@terra-money/terra.js'
+import { ConnectedWallet } from '@terra-money/wallet-provider'
 import { contractAdress } from './address'
 
 export const getCount = async (wallet: ConnectedWallet) => {
