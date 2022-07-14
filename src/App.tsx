@@ -1,51 +1,57 @@
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   useWallet,
   useConnectedWallet,
+  useLCDClient,
   WalletStatus,
 } from '@terra-money/wallet-provider'
-
-import * as execute from './contract/execute'
-import * as query from './contract/query'
+import { contractAdress } from './contract/address'
+import { {{client-name}} } from './contract/clients/{{client-name}}'
 import { ConnectWallet } from './components/ConnectWallet'
 
 const App = () => {
-  const [count, setCount] = useState(null)
+  const [count, setCount] = useState(0)
   const [updating, setUpdating] = useState(true)
   const [resetValue, setResetValue] = useState(0)
 
   const { status } = useWallet()
-
   const connectedWallet = useConnectedWallet()
+  const lcd = useLCDClient()
+
+  const contractClient = useMemo(() => {
+    if (!connectedWallet) {
+      return;
+    }
+    return new {{client-name}}(lcd, connectedWallet, contractAdress('{{project-name}}', connectedWallet));
+  }, [lcd, connectedWallet]);
 
   useEffect(() => {
     const prefetch = async () => {
-      if (connectedWallet) {
-        const { count } : any = await query.getCount(connectedWallet)
+      if (contractClient) {
+        const { count } = await contractClient.getCount();
         setCount(count) 
       }
       setUpdating(false)
     }
     prefetch()
-  }, [connectedWallet])
+  }, [contractClient])
 
   const onClickIncrement = async () => {
-    if (connectedWallet) {
+    if (contractClient) {
       setUpdating(true)
-      await execute.increment(connectedWallet)
-      const { count } : any = await query.getCount(connectedWallet)
+      await contractClient.increment();  
+      const { count } = await contractClient.getCount();
       setCount(count)
       setUpdating(false)
     }
   }
 
   const onClickReset = async () => {
-    if (connectedWallet) {
+    if (contractClient) {
       setUpdating(true)
-      console.log(resetValue)
-      await execute.reset(connectedWallet, resetValue)
-      const { count } : any = await query.getCount(connectedWallet)
+      await contractClient.reset({ count: resetValue });
+      const { count } = await contractClient.getCount();
       setCount(count)
       setUpdating(false)
     }
