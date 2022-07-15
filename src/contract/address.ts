@@ -2,7 +2,7 @@
   // @ts-ignore
 import { ConnectedWallet } from "@terra-money/wallet-provider";
 import config from "../refs.terrain.json";
-export const contractAdress = (name: string, wallet: ConnectedWallet) => {
+export const contractAddress = (name: string, wallet: ConnectedWallet) => {
   // Make sure the contract has actually been deployed to selected network.
   // @ts-ignore
   if (config[wallet.network.name]?.[name].contractAddresses?.default) {
