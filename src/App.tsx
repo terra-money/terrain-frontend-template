@@ -6,7 +6,7 @@ import {
   useLCDClient,
   WalletStatus,
 } from '@terra-money/wallet-provider'
-import { contractAdress } from './contract/address'
+import { contractAddress } from './contract/address'
 import { {{client-name}} } from './contract/clients/{{client-name}}'
 import { ConnectWallet } from './components/ConnectWallet'
 
@@ -23,7 +23,7 @@ const App = () => {
     if (!connectedWallet) {
       return;
     }
-    return new {{client-name}}(lcd, connectedWallet, contractAdress('{{project-name}}', connectedWallet));
+    return new {{client-name}}(lcd, connectedWallet, contractAddress('{{project-name}}', connectedWallet));
   }, [lcd, connectedWallet]);
 
   useEffect(() => {
