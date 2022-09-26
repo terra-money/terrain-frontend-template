@@ -29,7 +29,7 @@ const App = () => {
   useEffect(() => {
     const prefetch = async () => {
       if (contractClient) {
-        const { count } = await contractClient.getCount();
+        const { count } = await contractClient.getCountQuery();
         setCount(count) 
       }
       setUpdating(false)
@@ -41,7 +41,7 @@ const App = () => {
     if (contractClient) {
       setUpdating(true)
       await contractClient.increment();  
-      const { count } = await contractClient.getCount();
+      const { count } = await contractClient.getCountQuery();
       setCount(count)
       setUpdating(false)
     }
@@ -51,7 +51,7 @@ const App = () => {
     if (contractClient) {
       setUpdating(true)
       await contractClient.reset({ count: resetValue });
-      const { count } = await contractClient.getCount();
+      const { count } = await contractClient.getCountQuery();
       setCount(count)
       setUpdating(false)
     }
