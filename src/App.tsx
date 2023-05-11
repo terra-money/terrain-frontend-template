@@ -1,65 +1,81 @@
 import './App.css'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import {
   useWallet,
   useConnectedWallet,
-  useLCDClient,
   WalletStatus,
 } from '@terra-money/wallet-provider'
-import { contractAddress } from './contract/address'
-import { {{client-name}} } from './contract/clients/{{client-name}}'
+
+import * as execute from './contract/execute'
+import * as query from './contract/query'
 import { ConnectWallet } from './components/ConnectWallet'
+import { getTerraChain, getContractChains } from './contract/utils'
+// import { getContractChains } from './contract/address'
 
 const App = () => {
-  const [count, setCount] = useState(0)
+  const connectedWallet = useConnectedWallet()
+  const [count, setCount] = useState(null)
   const [updating, setUpdating] = useState(true)
+
+  const initChain = getContractChains(connectedWallet)[0]
+  const [chainID, setChainID] = useState(initChain)
+
+  const [contractChains, setContractChains] = useState([''])
   const [resetValue, setResetValue] = useState(0)
 
   const { status } = useWallet()
-  const connectedWallet = useConnectedWallet()
-  const lcd = useLCDClient()
 
-  const contractClient = useMemo(() => {
-    if (!connectedWallet) {
-      return;
+  useEffect(() => {
+    if (connectedWallet) {
+      setChainID(getTerraChain(connectedWallet))
+      setContractChains(getContractChains(connectedWallet))
     }
-    return new {{client-name}}(lcd, connectedWallet, contractAddress('{{project-name}}', connectedWallet));
-  }, [lcd, connectedWallet]);
+  }, [connectedWallet, status])
+
 
   useEffect(() => {
     const prefetch = async () => {
-      if (contractClient) {
-        const { count } = await contractClient.getCountQuery();
-        setCount(count) 
-      }
+      setUpdating(true)
+      if (connectedWallet) {
+        const { count } : any = await query.getCount(connectedWallet, chainID)
+        setCount(count)
+      }      
       setUpdating(false)
     }
     prefetch()
-  }, [contractClient])
+  },[connectedWallet, chainID])
 
   const onClickIncrement = async () => {
-    if (contractClient) {
+    if (connectedWallet) {
       setUpdating(true)
-      await contractClient.increment();  
-      const { count } = await contractClient.getCountQuery();
-      setCount(count)
-      setUpdating(false)
+      await execute.increment(connectedWallet)
+      await fetchCount()
     }
   }
 
   const onClickReset = async () => {
-    if (contractClient) {
+    if (connectedWallet) {
       setUpdating(true)
-      await contractClient.reset({ count: resetValue });
-      const { count } = await contractClient.getCountQuery();
+      await execute.reset(connectedWallet, resetValue)
+      await fetchCount()
+    }
+  }
+
+  const fetchCount = async () => {
+    if (connectedWallet) {
+      const { count } : any = await query.getCount(connectedWallet, chainID)
       setCount(count)
-      setUpdating(false)
     }
   }
 
   return (
     <div className="App">
       <header className="App-header">
+        {!!contractChains.length && contractChains.map((chain) => (
+          <button style={{ opacity : chainID === chain ? '1 ': '0.5' }} key={chain} type='button' onClick={() =>setChainID(chain)}>
+             {chain}
+          </button>
+          ))}
         <div style={{ display: 'inline' }}>
           COUNT: {count} {updating ? '(updating . . .)' : ''}
           <button onClick={onClickIncrement} type="button">
@@ -81,7 +97,7 @@ const App = () => {
           </div>
         )}
       </header>
-      <ConnectWallet />
+      <ConnectWallet chainID={chainID} />
     </div>
   )
 }

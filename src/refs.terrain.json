@@ -1,0 +1,35 @@
+{
+  "local": {
+    "localterra": {
+      "test1": {
+        "codeId": "32",
+        "contractAddresses": {
+          "default": "terra1y4h54zgqtvt97227a495mjalupzzd2sqv2t0hkkvdmapmhl470ks0pqdhp"
+        }
+      }
+    }
+  },
+  "mainnet": {
+    "juno-1": {
+      "test1": {
+        "codeId": "2796",
+        "contractAddresses": {
+          "default": "juno1r3npjc8ujsd6h86wguxdpsqtxsx55jtu8q9m3q8q09jq9ugg57gs533g0g"
+        }
+      }
+    },
+    "phoenix-1": {
+      "test1": {
+        "codeId": "1473",
+        "contractAddresses": {
+          "default": "terra1amngvh7wrmtneawk0nw0zsrrdq76ar66pluutn0nqk3jd2558sysuyaa39"
+        }
+      }
+    }
+  },
+  "testnet" :{
+  },
+
+  "classic": {
+  }
+}

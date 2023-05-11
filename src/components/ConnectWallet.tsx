@@ -1,13 +1,13 @@
 import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
 
-export const ConnectWallet = () => {
+export const ConnectWallet = ({chainID} : {chainID: string}) => {
   const {
     status,
-    network,
     wallets,
     availableConnectTypes,
     availableConnections,
     connect,
+    network,
     disconnect,
   } = useWallet();
 
@@ -18,7 +18,7 @@ export const ConnectWallet = () => {
           {JSON.stringify(
             {
               status,
-              network,
+              network: network[chainID],
               wallets,
               availableConnectTypes,
             },
