@@ -4,14 +4,13 @@ import { getContractAddress } from "./address";
 
 // ==== utils ====
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const until = Date.now() + 1000 * 60 * 60;
 const untilInterval = Date.now() + 1000 * 60;
 
-const _exec = (msg: any) =>
+const _exec = (msg: any, chainID: string) =>
   async (wallet: ConnectedWallet) => {
     const lcd = new LCDClient(wallet.network);
-    const chainID = 'phoenix-1'
 
     const { result } = await wallet.post({
       chainID,
@@ -43,7 +42,7 @@ const _exec = (msg: any) =>
 
 // ==== execute contract ====
 
-export const increment = _exec({ increment: {} });
+export const increment = (wallet: ConnectedWallet, chainID: string) => _exec({ increment: {} }, chainID)(wallet);
 
-export const reset = async (wallet: ConnectedWallet, count: number) =>
-  _exec({ reset: { count } })(wallet);
+export const reset = async (wallet: ConnectedWallet, count: number, chainID: string) =>
+  _exec({ reset: { count } }, chainID)(wallet);
