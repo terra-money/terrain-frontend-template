@@ -1,5 +1,5 @@
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   useWallet,
   useConnectedWallet,
@@ -24,7 +24,9 @@ const App = () => {
 
   useEffect(() => {
     if (connectedWallet) {
-      setContractChains(getContractChains(connectedWallet))
+      const chains = getContractChains(connectedWallet)
+      setContractChains(chains)
+      if (chains.length === 1) setChainID(chains[0])
     }
   }, [connectedWallet])
 
@@ -57,13 +59,14 @@ const App = () => {
     }
   }
 
-  const fetchCount = async () => {
+  const fetchCount = useCallback(async () => {
     if (connectedWallet) {
+      setUpdating(true)
       const { count } : any = await query.getCount(connectedWallet, chainID)
       setCount(count)
       setUpdating(false)
     }
-  }
+  }, [connectedWallet, chainID])
 
   return (
     <div className="App">
