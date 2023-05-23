@@ -14,20 +14,14 @@ const execTx =
   (msg: any, chainID: string) => async (wallet: WalletResponse, connected: ConnectResponse) => {
     const lcd = new LCDClient(wallet.network);
 
-    const result = await wallet.post({
-      chainID,
-      msgs: [
-        new MsgExecuteContract(
-          connected.addresses[chainID],
-          getContractAddress(connected?.name, chainID),
-          msg
-        ),
-      ],
-    });
+    const contractAddress = getContractAddress(connected.network, chainID)
+    const walletAddress = connected.addresses[chainID]
+    const execMsg = new MsgExecuteContract(walletAddress, contractAddress, msg)
+    const result = await wallet.post({ chainID, msgs: [execMsg]});
 
     while (true) {
       try {
-        return await lcd.tx.txInfo(result?.txhash ?? '', chainID);
+        if (result?.txhash) return await lcd.tx.txInfo(result.txhash, chainID);
       } catch (e) {
         if (Date.now() < untilInterval) {
           await sleep(500);

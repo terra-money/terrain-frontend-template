@@ -9,7 +9,5 @@ export const getContractAddress = (
   const contractAddress = (config as any)[network ?? '']?.[chainID]?.[
     "{{project-name}}"
   ].contractAddresses?.default;
-  if (contractAddress) {
-    return contractAddress;
-  }
+  if (contractAddress) return contractAddress;
 };
