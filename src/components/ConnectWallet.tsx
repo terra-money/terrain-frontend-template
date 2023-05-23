@@ -1,11 +1,9 @@
-import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
+import { useWallet, WalletStatus } from "@terra-money/wallet-kit";
 
-export const ConnectWallet = ({chainID} : {chainID: string}) => {
+export const ConnectWallet = ({ chainID }: { chainID: string }) => {
   const {
     status,
-    wallets,
-    availableConnectTypes,
-    availableConnections,
+    availableWallets,
     connect,
     network,
     disconnect,
@@ -19,48 +17,47 @@ export const ConnectWallet = ({chainID} : {chainID: string}) => {
             {
               status,
               network: network[chainID],
-              wallets,
-              availableConnectTypes,
+              availableWallets,
             },
             null,
-            2,
+            2
           )}
         </pre>
       </section>
 
       <footer>
-        {status === WalletStatus.WALLET_NOT_CONNECTED && (
+        {status === WalletStatus.NOT_CONNECTED && (
           <>
-            {availableConnectTypes.map((connectType) => (
+            {availableWallets.map(({id}) => (
               <button
-                key={'connect-' + connectType}
-                onClick={() => connect(connectType)}
+                key={"connect-" + id}
+                onClick={() => connect(id)}
               >
-                Connect {connectType}
+                Connect {id}
               </button>
             ))}
             <br />
-            {availableConnections.map(
-              ({ type, name, icon, identifier = '' }) => (
+            {availableWallets.map(
+              ({ name, icon, id }) => (
                 <button
-                  key={'connection-' + type + identifier}
-                  onClick={() => connect(type, identifier)}
+                  key={"connection-"  + id}
+                  onClick={() => connect(id)}
                 >
                   <img
                     src={icon}
                     alt={name}
-                    style={{ width: '1em', height: '1em' }}
+                    style={{ width: "1em", height: "1em" }}
                   />
-                  {name} [{identifier}]
+                  {name} [{id}]
                 </button>
-              ),
+              )
             )}
           </>
         )}
-        {status === WalletStatus.WALLET_CONNECTED && (
+        {status === WalletStatus.CONNECTED && (
           <button onClick={() => disconnect()}>Disconnect</button>
         )}
       </footer>
     </div>
   );
-}
+};

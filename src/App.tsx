@@ -1,90 +1,97 @@
-import './App.css'
-import { useEffect, useState, useCallback } from 'react'
+import "./App.css";
+import { useEffect, useState, useCallback } from "react";
 import {
-  useWallet,
   useConnectedWallet,
+  useWallet,
   WalletStatus,
-} from '@terra-money/wallet-provider'
-import * as execute from './contract/execute'
-import * as query from './contract/query'
-import { ConnectWallet } from './components/ConnectWallet'
-import { getContractChains } from './contract/utils'
+} from "@terra-money/wallet-kit";
+
+import * as execute from "./contract/execute";
+import * as query from "./contract/query";
+import { ConnectWallet } from "./components/ConnectWallet";
+import { getContractChains } from "./contract/utils";
 
 const App = () => {
-  const connectedWallet = useConnectedWallet()
-  const [count, setCount] = useState(null)
-  const [updating, setUpdating] = useState(true)
+  const connected = useConnectedWallet();
+  const wallet = useWallet();
+  const [count, setCount] = useState(null);
+  const [updating, setUpdating] = useState(true);
 
-  const [chainID, setChainID] = useState('')
+  const [chainID, setChainID] = useState("");
 
-  const [contractChains, setContractChains] = useState([''])
-  const [resetValue, setResetValue] = useState(0)
+  const [contractChains, setContractChains] = useState([""]);
+  const [resetValue, setResetValue] = useState(0);
 
-  const { status } = useWallet()
 
   useEffect(() => {
-    if (connectedWallet) {
-      const chains = getContractChains(connectedWallet)
-      setContractChains(chains)
-      if (chains.length === 1) setChainID(chains[0])
+    if (connected) {
+      const chains = getContractChains(connected);
+      setContractChains(chains);
+      if (chains.length === 1) setChainID(chains[0]);
     }
-  }, [connectedWallet])
-
+  }, [connected]);
 
   useEffect(() => {
     const prefetch = async () => {
-      setUpdating(true)
-      if (connectedWallet) {
-        const { count } : any = await query.getCount(connectedWallet, chainID)
-        setCount(count)
-      }      
-      setUpdating(false)
-    }
-    prefetch()
-  },[connectedWallet, chainID])
+      setUpdating(true);
+      if (connected) {
+        const { count }: any = await query.getCount(wallet, connected, chainID);
+        setCount(count);
+      }
+      setUpdating(false);
+    };
+    prefetch();
+  }, [connected, chainID, wallet]);
 
   const onClickIncrement = async () => {
-    if (connectedWallet) {
-      setUpdating(true)
-      await execute.increment(connectedWallet, chainID)
-      await fetchCount()
+    if (connected) {
+      setUpdating(true);
+      await execute.increment(wallet, connected, chainID);
+      await fetchCount();
     }
-  }
+  };
 
   const onClickReset = async () => {
-    if (connectedWallet) {
-      setUpdating(true)
-      await execute.reset(connectedWallet, resetValue, chainID)
-      await fetchCount()
+    if (connected) {
+      setUpdating(true);
+      await execute.reset(wallet, connected, resetValue, chainID);
+      await fetchCount();
     }
-  }
+  };
 
   const fetchCount = useCallback(async () => {
-    if (connectedWallet) {
-      setUpdating(true)
-      const { count } : any = await query.getCount(connectedWallet, chainID)
-      setCount(count)
-      setUpdating(false)
+    if (connected) {
+      setUpdating(true);
+      const { count }: any = await query.getCount(wallet, connected, chainID);
+      setCount(count);
+      setUpdating(false);
     }
-  }, [connectedWallet, chainID])
+  }, [connected, chainID, wallet]);
 
   return (
     <div className="App">
       <header className="App-header">
         {contractChains.map((chain) => (
-          <button style={{ opacity : chainID === chain ? '1 ': '0.5' }} key={chain} type='button' onClick={() =>setChainID(chain)}>
-             {chain}
+          <button
+            style={{ opacity: chainID === chain ? "1 " : "0.5" }}
+            key={chain}
+            type="button"
+            onClick={() => setChainID(chain)}
+          >
+            {chain}
           </button>
-          ))}
-          {chainID ? 
-        <div>
-          COUNT: {count} {updating && '(updating ...)'}
-          <button onClick={onClickIncrement} type="button">
-            +
-          </button>
-        </div>
-        : <div> Please select a chain </div>}
-        {status === WalletStatus.WALLET_CONNECTED && (
+        ))}
+        {chainID ? (
+          <div>
+            COUNT: {count} {updating && "(updating ...)"}
+            <button onClick={onClickIncrement} type="button">
+              +
+            </button>
+          </div>
+        ) : (
+          <div> Please select a chain </div>
+        )}
+        {wallet.status === WalletStatus.CONNECTED && (
           <div>
             <input
               type="number"
@@ -99,7 +106,7 @@ const App = () => {
       </header>
       <ConnectWallet chainID={chainID} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

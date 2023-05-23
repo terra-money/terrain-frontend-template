@@ -1,23 +1,25 @@
 import { LCDClient, MsgExecuteContract } from "@terra-money/feather.js";
-import { ConnectedWallet } from "@terra-money/wallet-provider";
 import { getContractAddress } from "./address";
+import { WalletResponse } from "types";
+import { ConnectResponse } from "@terra-money/wallet-interface";
 
 // ==== utils ====
 
-export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 const until = Date.now() + 1000 * 60 * 60;
 const untilInterval = Date.now() + 1000 * 60;
 
-const _exec = (msg: any, chainID: string) =>
-  async (wallet: ConnectedWallet) => {
+const execTx =
+  (msg: any, chainID: string) => async (wallet: WalletResponse, connected: ConnectResponse) => {
     const lcd = new LCDClient(wallet.network);
 
-    const { result } = await wallet.post({
+    const result = await wallet.post({
       chainID,
       msgs: [
         new MsgExecuteContract(
-          wallet.addresses[chainID],
-          getContractAddress(wallet, chainID),
+          connected.addresses[chainID],
+          getContractAddress(connected?.name, chainID),
           msg
         ),
       ],
@@ -25,7 +27,7 @@ const _exec = (msg: any, chainID: string) =>
 
     while (true) {
       try {
-        return await lcd.tx.txInfo(result.txhash, chainID);
+        return await lcd.tx.txInfo(result?.txhash ?? '', chainID);
       } catch (e) {
         if (Date.now() < untilInterval) {
           await sleep(500);
@@ -33,7 +35,7 @@ const _exec = (msg: any, chainID: string) =>
           await sleep(1000 * 10);
         } else {
           throw new Error(
-            `Transaction queued. To verify the status, please check the transaction hash: ${result.txhash}`
+            `Transaction queued. To verify the status, please check the transaction hash: ${result?.txhash}`
           );
         }
       }
@@ -42,7 +44,12 @@ const _exec = (msg: any, chainID: string) =>
 
 // ==== execute contract ====
 
-export const increment = (wallet: ConnectedWallet, chainID: string) => _exec({ increment: {} }, chainID)(wallet);
+export const increment = (wallet: WalletResponse, connected: ConnectResponse, chainID: string) =>
+  execTx({ increment: {} }, chainID)(wallet, connected);
 
-export const reset = async (wallet: ConnectedWallet, count: number, chainID: string) =>
-  _exec({ reset: { count } }, chainID)(wallet);
+export const reset = async (
+  wallet: WalletResponse,
+  connected: ConnectResponse,
+  count: number,
+  chainID: string
+) => execTx({ reset: { count } }, chainID)(wallet, connected);
