@@ -1,7 +1,6 @@
 import { LCDClient } from "@terra-money/feather.js";
-import { ConnectResponse } from "@terra-money/wallet-interface";
+import { ConnectResponse, WalletResponse } from "@terra-money/wallet-kit";
 import { getContractAddress } from "./address";
-import { WalletResponse } from "types";
 
 export const getCount = async (wallet: WalletResponse, connected: ConnectResponse, chainID: string) => {
   const lcd = new LCDClient(wallet.network);

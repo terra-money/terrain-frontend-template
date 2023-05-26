@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   useWallet,
-  WalletStatus,
+  ConnectResponse
 } from "@terra-money/wallet-kit";
 import * as execute from "../contract/execute";
 import * as query from "../contract/query";
 import { getContractChains } from "../contract/utils";
-import { ConnectResponse } from "@terra-money/wallet-interface";
 
 export const Contract = ({ connected }: { connected: ConnectResponse }) => {
   const wallet = useWallet();

@@ -1,4 +1,4 @@
-import { ConnectResponse } from "@terra-money/wallet-interface";
+import { ConnectResponse } from "@terra-money/wallet-kit";
 import config from "../refs.terrain.json";
 
 export const getContractChains = (connect: ConnectResponse) => {

@@ -1,7 +1,6 @@
 import { LCDClient, MsgExecuteContract } from "@terra-money/feather.js";
 import { getContractAddress } from "./address";
-import { WalletResponse } from "types";
-import { ConnectResponse } from "@terra-money/wallet-interface";
+import { ConnectResponse, WalletResponse } from "@terra-money/wallet-kit";
 
 // ==== utils ====
 
@@ -17,11 +16,14 @@ const execTx =
     const contractAddress = getContractAddress(connected.network, chainID)
     const walletAddress = connected.addresses[chainID]
     const execMsg = new MsgExecuteContract(walletAddress, contractAddress, msg)
-    const result = await wallet.post({ chainID, msgs: [execMsg]});
+    const tx = await wallet.post({ chainID, msgs: [execMsg]});
+    const txHash = tx?.result?.txhash;
 
     while (true) {
       try {
-        if (result?.txhash) return await lcd.tx.txInfo(result.txhash, chainID);
+        if (txHash) {
+          return await lcd.tx.txInfo(txHash, chainID);
+        }
       } catch (e) {
         if (Date.now() < untilInterval) {
           await sleep(500);
@@ -29,7 +31,7 @@ const execTx =
           await sleep(1000 * 10);
         } else {
           throw new Error(
-            `Transaction queued. To verify the status, please check the transaction hash: ${result?.txhash}`
+            `Transaction queued. To verify the status, please check the transaction hash: ${txHash}`
           );
         }
       }
