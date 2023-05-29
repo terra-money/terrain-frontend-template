@@ -3,10 +3,10 @@
 import config from "../refs.terrain.json";
 
 export const getContractAddress = (
-  network: string | undefined,
+  network = 'testnet',
   chainID: string
 ) => {
-  const contractAddress = (config as any)[network ?? '']?.[chainID]?.[
+  const contractAddress = (config as any)[network][chainID][
     "{{project-name}}"
   ].contractAddresses?.default;
   if (contractAddress) return contractAddress;
