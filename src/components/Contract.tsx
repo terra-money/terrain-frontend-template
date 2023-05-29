@@ -75,7 +75,7 @@ export const Contract = ({ connected }: { connected: ConnectResponse }) => {
               </button>
             </div>
           ) : (
-            <div> {contractChains.length ? 'Select a chain' : 'Deploy a contract'} </div>
+            <div> {contractChains.length ? 'Select a chain' : `Deploy a contract on ${connected.network}`} </div>
           )}
           <input
               type="number"
