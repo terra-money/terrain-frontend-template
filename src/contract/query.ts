@@ -4,6 +4,6 @@ import { getContractAddress } from "./address";
 
 export const getCount = async (wallet: WalletResponse, connected: ConnectResponse, chainID: string) => {
   const lcd = new LCDClient(wallet.network);
-  const address = getContractAddress(connected?.network, chainID);
+  const address = getContractAddress(connected.network, chainID);
   return lcd.wasm.contractQuery(address, { get_count: {} });
 };

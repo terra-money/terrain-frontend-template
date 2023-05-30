@@ -25,16 +25,17 @@ export const Contract = ({ connected }: { connected: ConnectResponse }) => {
 
   useEffect(() => {
     const prefetch = async () => {
-        const { count }: any = await query.getCount(wallet, connected, chainID);
-        setCount(count);
+        const res: any = await query.getCount(wallet, connected, chainID);
+        setCount(res?.count);
     }
     prefetch()
   }, [chainID, connected, wallet]);
 
   const updateCount = async () => {
     setUpdating(true);
-    const { count }: any = await query.getCount(wallet, connected, chainID);
-    setCount(count);
+    await execute.sleep(5000)
+    const res: any = await query.getCount(wallet, connected, chainID);
+    setCount(res?.count);
     setUpdating(false);
 }
 
