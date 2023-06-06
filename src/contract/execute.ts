@@ -17,13 +17,13 @@ const execTx =
     const walletAddress = connected.addresses[chainID]
     const execMsg = new MsgExecuteContract(walletAddress, contractAddress, msg)
     const tx = await wallet.post({ chainID, msgs: [execMsg]});
-    const txHash = tx?.result?.txhash;
+   
+    if (tx?.error) throw new Error(tx.error.message);
 
     while (true) {
       try {
-        if (txHash) {
-          return await lcd.tx.txInfo(txHash, chainID);
-        }
+        if (!tx.result?.txhash) throw new Error("Transaction hash not found");
+          return await lcd.tx.txInfo(tx.result?.txhash, chainID);
       } catch (e) {
         if (Date.now() < untilInterval) {
           await sleep(500);
@@ -31,7 +31,7 @@ const execTx =
           await sleep(1000 * 10);
         } else {
           throw new Error(
-            `Transaction queued. To verify the status, please check the transaction hash: ${txHash}`
+            `Transaction queued. To verify the status, please check the transaction hash: ${tx.result?.txhash}`
           );
         }
       }
