@@ -18,7 +18,7 @@ const execTx =
     const execMsg = new MsgExecuteContract(walletAddress, contractAddress, msg)
     const tx = await wallet.post({ chainID, msgs: [execMsg]});
    
-    if (tx?.error) throw new Error(tx.error.message);
+    if (!tx?.success) throw new Error(JSON.stringify(tx, null, 2));
 
     while (true) {
       try {
