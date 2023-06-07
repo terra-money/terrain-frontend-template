@@ -18,7 +18,9 @@ const execTx =
     const execMsg = new MsgExecuteContract(walletAddress, contractAddress, msg)
     const tx = await wallet.post({ chainID, msgs: [execMsg]});
    
-    if (!tx?.success) throw new Error(JSON.stringify(tx, null, 2));
+    if (!tx?.success) {
+      throw new Error(JSON.stringify(tx, null, 2));
+    }
 
     while (true) {
       try {
@@ -46,6 +48,6 @@ export const increment = (wallet: WalletResponse, connected: ConnectResponse, ch
 export const reset = async (
   wallet: WalletResponse,
   connected: ConnectResponse,
-  count: number,
-  chainID: string
+  chainID: string,
+  count: number
 ) => execTx({ reset: { count } }, chainID)(wallet, connected);
