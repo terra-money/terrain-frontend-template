@@ -33,7 +33,6 @@ export const Contract = ({ connected }: { connected: ConnectResponse }) => {
 
   const updateCount = async () => {
     setUpdating(true);
-    await execute.sleep(5000)
     const res: any = await query.getCount(wallet, connected, chainID);
     setCount(res?.count);
     setUpdating(false);
