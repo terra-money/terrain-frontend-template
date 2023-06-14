@@ -1,66 +1,51 @@
-import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
+import { useWallet, WalletStatus } from "@terra-money/wallet-kit";
 
 export const ConnectWallet = () => {
   const {
     status,
-    network,
-    wallets,
-    availableConnectTypes,
-    availableConnections,
+    availableWallets,
     connect,
+    network,
     disconnect,
   } = useWallet();
 
   return (
     <div>
       <section>
-        <pre>
+      {status === WalletStatus.NOT_CONNECTED && (
+          <>
+            {availableWallets.map(({id, name, icon}) => (
+              <button
+                key={"connect-" + id}
+                onClick={() => connect(id)}
+              >
+                <img
+                    src={icon}
+                    alt={name}
+                    style={{ width: "1em", height: "1em" }}
+                  />
+                Connect {name}
+              </button>
+            ))}
+          </>
+        )}
+        {status === WalletStatus.CONNECTED && (
+          <button onClick={() => disconnect()}>Disconnect</button>
+        )}
+      </section>
+      <footer>
+      <pre>
           {JSON.stringify(
             {
               status,
               network,
-              wallets,
-              availableConnectTypes,
+              availableWallets,
             },
             null,
-            2,
+            2
           )}
         </pre>
-      </section>
-
-      <footer>
-        {status === WalletStatus.WALLET_NOT_CONNECTED && (
-          <>
-            {availableConnectTypes.map((connectType) => (
-              <button
-                key={'connect-' + connectType}
-                onClick={() => connect(connectType)}
-              >
-                Connect {connectType}
-              </button>
-            ))}
-            <br />
-            {availableConnections.map(
-              ({ type, name, icon, identifier = '' }) => (
-                <button
-                  key={'connection-' + type + identifier}
-                  onClick={() => connect(type, identifier)}
-                >
-                  <img
-                    src={icon}
-                    alt={name}
-                    style={{ width: '1em', height: '1em' }}
-                  />
-                  {name} [{identifier}]
-                </button>
-              ),
-            )}
-          </>
-        )}
-        {status === WalletStatus.WALLET_CONNECTED && (
-          <button onClick={() => disconnect()}>Disconnect</button>
-        )}
       </footer>
     </div>
   );
-}
+};
